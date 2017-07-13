@@ -9,6 +9,7 @@ import (
 
 type Protocol interface {
 	NewCodec(rw io.ReadWriter) (Codec, error)
+	Register(i interface{})
 }
 
 type ProtocolFunc func(rw io.ReadWriter) (Codec, error)
@@ -27,12 +28,12 @@ type ClearSendChan interface {
 	ClearSendChan(<-chan interface{})
 }
 
-func Listen(network, address string, protocol Protocol, sendChanSize int, handler Handler) (*Server, error) {
+func Listen(network, address string, protocol Protocol, sendChanSize int) (*Server, error) {
 	listener, err := net.Listen(network, address)
 	if err != nil {
 		return nil, err
 	}
-	return NewServer(listener, protocol, sendChanSize, handler), nil
+	return NewServer(listener, protocol, sendChanSize), nil
 }
 
 func Dial(network, address string, protocol Protocol, sendChanSize int) (*Session, error) {

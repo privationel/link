@@ -1,8 +1,12 @@
 package link
 
-import "net"
+import (
+	"log"
+	"net"
+)
 
 type Server struct {
+	router       *Router
 	manager      *Manager
 	listener     net.Listener
 	protocol     Protocol
@@ -22,14 +26,22 @@ func (f HandlerFunc) HandleSession(session *Session) {
 	f(session)
 }
 
-func NewServer(listener net.Listener, protocol Protocol, sendChanSize int, handler Handler) *Server {
-	return &Server{
+func NewServer(listener net.Listener, protocol Protocol, sendChanSize int) *Server {
+	protocol.Register(Request{})
+	protocol.Register(Response{})
+	s := &Server{
 		manager:      NewManager(),
+		router:       NewRouter(),
 		listener:     listener,
 		protocol:     protocol,
-		handler:      handler,
 		sendChanSize: sendChanSize,
 	}
+	s.handler = HandlerFunc(s.DefalutHandle)
+	return s
+}
+
+func (server *Server) RegisterRouter(router string, f HandleFunction) {
+	server.router.routerRegister(router, f)
 }
 
 func (server *Server) Listener() net.Listener {
@@ -37,6 +49,7 @@ func (server *Server) Listener() net.Listener {
 }
 
 func (server *Server) Serve() error {
+	log.Println("server listening addr", server.listener.Addr().String())
 	for {
 		conn, err := Accept(server.listener)
 		if err != nil {

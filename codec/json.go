@@ -5,7 +5,7 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/funny/link"
+	"github.com/privationel/link"
 )
 
 type JsonProtocol struct {
@@ -49,12 +49,12 @@ func (j *JsonProtocol) NewCodec(rw io.ReadWriter) (link.Codec, error) {
 	return codec, nil
 }
 
-type jsonIn struct {
+type JsonIn struct {
 	Head string
 	Body *json.RawMessage
 }
 
-type jsonOut struct {
+type JsonOut struct {
 	Head string
 	Body interface{}
 }
@@ -67,7 +67,7 @@ type jsonCodec struct {
 }
 
 func (c *jsonCodec) Receive() (interface{}, error) {
-	var in jsonIn
+	var in JsonIn
 	err := c.decoder.Decode(&in)
 	if err != nil {
 		return nil, err
@@ -86,7 +86,7 @@ func (c *jsonCodec) Receive() (interface{}, error) {
 }
 
 func (c *jsonCodec) Send(msg interface{}) error {
-	var out jsonOut
+	var out JsonOut
 	t := reflect.TypeOf(msg)
 	if t.Kind() == reflect.Ptr {
 		t = t.Elem()
