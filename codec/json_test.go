@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/funny/link"
+	"github.com/privationel/link"
 )
 
 type MyMessage1 struct {

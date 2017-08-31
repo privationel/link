@@ -33,6 +33,13 @@ func (channel *Channel) Fetch(callback func(*Session)) {
 		callback(session)
 	}
 }
+func (channel *Channel) DeleteKeyBySession(session *Session) {
+	for k, s := range channel.sessions {
+		if session == s {
+			channel.remove(k, s)
+		}
+	}
+}
 
 func (channel *Channel) Get(key KEY) *Session {
 	channel.mutex.RLock()

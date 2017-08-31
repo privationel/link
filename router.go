@@ -17,7 +17,18 @@ func NewRouter() (r *Router) {
 	r.routerMap = make(map[string]HandleFunction)
 	return r
 }
+func (r *Router) RouterRegister(router string, f HandleFunction) {
+	r.routerMap[router] = f
+}
+func (r *Router) GetHandle(key string) (f HandleFunction, err error) {
+	f, ok := r.routerMap[key]
+	if !ok {
+		return nil, errors.New("not found the method;")
+	} else {
+		return f, nil
+	}
 
+}
 func (r *Router) routerRegister(router string, f HandleFunction) {
 	r.routerMap[router] = f
 }
